@@ -37,8 +37,9 @@ class ParkingGarage:
     price = 5
 
     # BC(layed out logic) JH(worked on take_ticket, leave_garage)
-    def __init__(self):
-        pass
+    def __init__(self, current_spot=""):
+        self.current_spot= current_spot
+        
 
     def take_ticket(self):
         # assign user a spot
@@ -56,6 +57,7 @@ class ParkingGarage:
         for spot in self.parking_spaces:
             if not self.parking_spaces[spot]['occupied']:
                 self.parking_spaces[spot]['occupied'] = True
+                self.current_spot = spot
                 self.parking_spaces[spot]['balance'] = self.price
                 print(f"You've been assigned spot {spot} and your balance is {self.price}.")
                 break
@@ -74,8 +76,19 @@ class ParkingGarage:
         # if no pay balance
         # update balance if they pay
         # else dont let them leave
-        pass
+        
+        while self.parking_spaces[self.current_spot]['balance'] > 0:
+            user_input= input("Are you going to pay your balance?yes/no")
+            if user_input == "y" or user_input == "yes":
+                self.parking_spaces [self.current_spot]['balance'] = 0
+            else : 
+                print("You cant leave until you pay your balance")
+                
+            
+             
+          
 
+      
     def leave_garage(self, spot):
         # in a while loop
         # if user has paid for parking:
@@ -131,8 +144,3 @@ def main():
 
 # main()
 
-building = ParkingGarage()
-building.take_ticket()
-building.take_ticket()
-building.take_ticket()
-building.take_ticket()
