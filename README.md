@@ -35,4 +35,22 @@ When the project is completed, commit the final changes, sync all pull requests,
 
 ###### List group responsiblities below:
 
+Brendan Carlson:
+- Outline of class and control flow for main function
+
+John Han:
+- 
+
+Jordan Allen:
+- 
+
 ###### Provide name and approxamite line numbers where each person wrote their code
+
+Brendan Carlson:
+- 
+
+John Han:
+- 
+
+Jordan Allen:
+- 
