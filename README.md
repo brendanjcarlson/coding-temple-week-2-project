@@ -36,7 +36,7 @@ When the project is completed, commit the final changes, sync all pull requests,
 ###### List group responsiblities below:
 
 Brendan Carlson:
-- Main outline of class and control flow for main function.
+- Main outline of class and control flow for driver function (main function).
 
 John Han:
 - Updated data structure for class. Wrote out take_ticket and leave_garage class functions. Created text + option dictionaries and implemented throughout code.
