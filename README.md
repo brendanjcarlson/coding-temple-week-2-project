@@ -36,21 +36,14 @@ When the project is completed, commit the final changes, sync all pull requests,
 ###### List group responsiblities below:
 
 Brendan Carlson:
-- Outline of class and control flow for main function
+- Main outline of class and control flow for main function.
 
 John Han:
-- 
+- Updated data structure for class. Wrote out take_ticket and leave_garage class functions. Created text + option dictionaries and implemented throughout code.
 
 Jordan Allen:
-- 
+- Wrote out pay_for_parking function and updated take_ticket function.
 
 ###### Provide name and approxamite line numbers where each person wrote their code
 
-Brendan Carlson:
-- 
-
-John Han:
-- 
-
-Jordan Allen:
-- 
+See markdown comments in parkingGarage.py for specific section contributions.
