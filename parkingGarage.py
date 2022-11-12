@@ -1,5 +1,3 @@
-from numpy import random
-
 # JH(created text and options dictionaries and implemented throughout code)
 text = {
     'spot_assign': "\nYou've been assigned spot {spot} and your balance is {price}.",
@@ -55,7 +53,13 @@ class ParkingGarage:
         'C9': {'occupied': True}, 
         'C10': {'occupied': True}, 
     }
-    price = 5
+    prices= {
+        'tier_1': 5,
+        'tier_2': 8,
+        'tier_3': 10,
+
+    }
+    fee=2
 
 
     # BC(layed out logic) 
@@ -65,7 +69,7 @@ class ParkingGarage:
         self.current_spot= current_spot
         
 
-    def take_ticket(self):
+    def take_ticket(self, parking_duration):
         # assign user a spot
         # update their balance with cost of ticket
 
@@ -80,8 +84,19 @@ class ParkingGarage:
             if not self.parking_spaces[spot]['occupied']:
                 self.parking_spaces[spot]['occupied'] = True
                 self.current_spot = spot
-                self.parking_spaces[spot]['balance'] = self.price
-                print(text['spot_assign'].format(spot=spot, price=self.price))
+                if parking_duration < 4:
+                    # parking_duration is less than 4, price will change the balance for tier_1
+                    self.parking_spaces[spot]['balance'] = self.prices["tier_1"]
+                    print(text['spot_assign'].format(spot=spot, price=self.price["tier_1"]))
+                elif parking_duration < 8:
+                    # parking_duration is less than 8, price will change the balance for tier_2
+                    self.parking_spaces[spot]['balance']= self.prices["tier_2"]
+                    print(text['spot_assign'].format(spot=spot, price=self.prices["tier_2"]))
+                else:
+                    # paring_duration is less than 12, price will change the balance for tier_3
+                    self.parking_spaces[spot]['balance']= self.prices["tier_3"]
+                    print(text['spot_assign'].format(spot=spot, price=self.prices["tier_3"]))
+                
                 break
             
             elif count == 30:
@@ -126,8 +141,9 @@ def main():
         while entering:
             user_choice = input(text['park_query']).lower()
             if user_choice in options['yes']:
+                parking_duration = int(input("How long do you want to park? (4, 8, or 12) hours"))
                 entering = False
-                park.take_ticket()
+                park.take_ticket(parking_duration)
             elif user_choice in options['no']:
                 print(text['good_day'])
                 entering, app_running = False, False
