@@ -1,21 +1,20 @@
-from numpy import random
-
 # JH(created text and options dictionaries and implemented throughout code)
 text = {
-    'spot_assign': "You've been assigned spot {spot} and your balance is {price}.",
-    'garage_full': "It appears all spots are currently taken. Apologies for the inconvenience.",
-    'pay_balance': "Are you going to pay your balance?\n(Y)es | (N)o",
-    'no_leave': "You can't leave until you pay your balance.",
-    'show_balance': "Your balance is still {balance}. Please pay your balance before leaving.",
-    'park_query': "Would you like to park?\n(Y)es | (N)o",
-    'exit_query': "Would you like to exit?\n(Y)es | (N)o",
-    'query_error': "Invalid selection, please select:\n(Y)es | (N)o",
-    'good_day': "Have a good day!"
+    'spot_assign': "\nYou've been assigned spot {spot} and your balance is {price}.",
+    'garage_full': "\nIt appears all spots are currently taken. Apologies for the inconvenience.",
+    'pay_balance': "\nAre you going to pay your balance?\n(Y)es | (N)o\n",
+    'no_leave': "\nYou can't leave until you pay your balance.",
+    'show_balance': "\nYour balance is still {balance}. Please pay your balance before leaving.",
+    'park_query': "\nWould you like to park?\n(Y)es | (N)o\n",
+    'exit_query': "\nWould you like to exit?\n(Y)es | (N)o\n",
+    'query_error': "\nInvalid selection, please select:\n(Y)es | (N)o\n",
+    'payment_success': "\nYour payment was received and your balance is {balance}. You have 15 minutes to leave the garage. Thank you!",
+    'good_day': "\nHave a good day!"
 }
 
 options = {
-    'yes': ['y', 'yes', 'ye', 'yeah', 'yea', 'yeh', 'ya', 'yah', '(y)es'],
-    'no': ['n', 'no', 'nah', 'na', 'nay', '(n)o']
+    'yes': ['y', 'yes', 'ye', 'yeah', 'yea', 'yeh', 'ya', 'yah', '(y)es', '(y)'],
+    'no': ['n', 'no', 'nah', 'na', 'nay', '(n)o', '(n)']
 }
 
 
@@ -54,7 +53,7 @@ class ParkingGarage:
         'C9': {'occupied': False},
         'C10': {'occupied': False},
     }
-    price = 5
+    fee = 2
 
     # BC(layed out logic)
     # JH(worked on take_ticket, leave_garage)
@@ -72,13 +71,33 @@ class ParkingGarage:
         #     if num not in current_ticket and parking_spaces[]:
         #         current_ticket[num] = num
 
+        # Loops over dict for occupied spots each time a ticket is taken
         count = 0
+        for spot in self.parking_spaces:
+            if self.parking_spaces[spot]['occupied']:
+                count += 1
+
+        # Assigning a user first avail. spot unless full, sets spot to occupied, sets balance to price
         for spot in self.parking_spaces:
             if not self.parking_spaces[spot]['occupied']:
                 self.parking_spaces[spot]['occupied'] = True
                 self.current_spot = spot
-                self.parking_spaces[spot]['balance'] = self.price
-                print(text['spot_assign'].format(spot=spot, price=self.price))
+                if parking_duration < 4:
+                    # parking_duration is less than 4, price will change the balance for tier_1
+                    self.parking_spaces[spot]['balance'] = self.prices["tier_1"]
+                    print(text['spot_assign'].format(
+                        spot=spot, price=self.price["tier_1"]))
+                elif parking_duration < 8:
+                    # parking_duration is less than 8, price will change the balance for tier_2
+                    self.parking_spaces[spot]['balance'] = self.prices["tier_2"]
+                    print(text['spot_assign'].format(
+                        spot=spot, price=self.prices["tier_2"]))
+                else:
+                    # paring_duration is less than 12, price will change the balance for tier_3
+                    self.parking_spaces[spot]['balance'] = self.prices["tier_3"]
+                    print(text['spot_assign'].format(
+                        spot=spot, price=self.prices["tier_3"]))
+
                 break
 
             else:
@@ -128,14 +147,16 @@ def main():
         while entering:
             user_choice = input(text['park_query']).lower()
             if user_choice in options['yes']:
+                parking_duration = int(
+                    input("How long do you want to park? (4, 8, or 12) hours"))
                 entering = False
+                park.take_ticket(parking_duration)
             elif user_choice in options['no']:
                 print(text['good_day'])
                 entering, app_running = False, False
             else:
                 continue
 
-        park.take_ticket()
         exiting = True
         while exiting:
             user_choice = input(text['exit_query']).lower()
@@ -150,4 +171,4 @@ def main():
                 print(text['query_error'])
 
 
-# main()
+main()
