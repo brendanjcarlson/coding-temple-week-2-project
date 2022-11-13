@@ -35,6 +35,8 @@ When the project is completed, commit the final changes, sync all pull requests,
 
 ###### List group responsiblities below:
 
+~See comments in code for further details.~
+
 Brendan Carlson:
 - Main outline of class and control flow for driver function (main function).
 

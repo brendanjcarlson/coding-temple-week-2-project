@@ -4,7 +4,7 @@ import math
 # if no, enter while loop
 
 
-# BC(layed out format and ticket/spot assign)
+# BC(layed out format and ticket/spot assign. moved dictionaries to inside class)
 # JH(updated parking_spaces, removed current_ticket)
 
 
@@ -48,24 +48,30 @@ class ParkingGarage:
         'tier_3': 10,
     }
     fee = 2
+    # BC(added k/v pairs to dict)
     # JH(created text dict)
     text = {
-        'spot_assign': "\nYou've been assigned spot {spot} and your balance is {balance}.",
+        'invalid_selection': "Invalid selection, please enter a valid number.",
+        'spot_assign': "\nYou've been assigned spot {spot} and your balance is ${balance:.2f}.",
         'garage_full': "\nIt appears all spots are currently taken. Apologies for the inconvenience.",
         'pay_balance': "\nAre you going to pay your balance?\n(Y)es | (N)o\n",
-        'current_balance': "\nYou have a balance of {balance} remaining. How much would you like to pay towards it?",
+        'current_balance': "\nYou have a balance of ${balance:.2f} remaining. How much would you like to pay towards it?\n",
         'no_leave': "\nYou can't leave until you pay your full balance.",
-        'show_balance': "\nYour balance is still {balance}. Please pay your balance before leaving.",
+        'show_balance': "\nYour balance is still ${balance:.2f}. Please pay your balance before leaving.",
         'park_query': "\nWould you like to park?\n(Y)es | (N)o\n",
+        'leave_query': "\nAre you ready to leave?\n(Y)es | (N)o\n",
         'exit_query': "\nWould you like to exit?\n(Y)es | (N)o\n",
         'query_error': "\nInvalid selection, please select:\n(Y)es | (N)o\n",
-        'payment_success': "\nYour payment was received and your balance is {balance}. You have 15 minutes to leave the garage. Thank you!",
+        'payment_success': "\nYour payment was received and your balance is ${balance:.2f}. You have 15 minutes to leave the garage. Thank you!",
         'good_day': "\nHave a good day!",
-        'duration_query': "\nHow long do you want to park? (4, 8, or 12) hours\n",
-        'payment_duration': "\nHow many long did you park for (in hours)? eg. 4 or 5.3",
-        'fee_applied': "\nA fee of {fee} per hour has been added to your balance for going over your allotted duration.\nYour new balance is {balance}",
-        'pay_full': "You have a balance of {balance}. Would you like to pay the full balance or just a portion? (F)ull | (P)ortion",
+        'duration_query': "\nHow long do you want to park? (4, 8, or 12)hours\n",
+        'payment_duration': "\nHow long did you park for (in hours)? eg. 4 or 5.3\n",
+        'fee_applied': "\nA fee of ${fee:.2f} per hour has been added to your balance for going over your allotted duration.\nYour new balance is ${balance:.2f}",
+        'pay_full': "You have a balance of ${balance:.2f}. Would you like to pay the full balance or just a portion? (F)ull | (P)ortion\n",
+        'show_timer': "You have {timer} more minutes until the authorities are called. Stay at your own risk.",
+        'call_popo': "\U0001F6A8 \U0001F693 \U0001F6A8 \U0001F693 \U0001F6A8 TIME'S UP SUCKA. WOOP WOOP THAT'S THE SOUND OF THE POLICE. \U0001F6A8 \U0001F693 \U0001F6A8 \U0001F693 \U0001F6A8",
     }
+    # BC(added k/v pairs to dict)
     # JH(made options dict)
     options = {
         'yes': ['y', 'yes', 'ye', 'yeah', 'yea', 'yeh', 'ya', 'yah', '(y)es', '(y)'],
@@ -78,8 +84,9 @@ class ParkingGarage:
 
     # JA(worked on pay_for_parking, updated take_ticket)
 
-    def __init__(self, current_spot=""):
+    def __init__(self, current_spot="", timer=15):
         self.current_spot = current_spot
+        self.timer = timer
 
     # JH(worked on take_ticket, leave_garage)
     # BC(added spot assignment and counter loop and parking duration)
@@ -122,9 +129,17 @@ class ParkingGarage:
                 print(self.text['garage_full'])
 
     # BC(added input/logic for adding fee if user over time)
+    # JH(added try/except)
     def pay_for_parking(self):
-        user_duration = float(
-            input(self.text['payment_duration']))
+        pay_durationing = True
+        while pay_durationing:
+            user_duration = input(self.text['payment_duration'])
+            try:
+                user_duration = abs(float(user_duration))
+                pay_durationing = False
+            except:
+                print(self.text['invalid_selection'])
+
         if user_duration > self.parking_spaces[self.current_spot]['duration']:
             time_over = user_duration - \
                 self.parking_spaces[self.current_spot]['duration']
@@ -133,6 +148,8 @@ class ParkingGarage:
             print(self.text['fee_applied'].format(
                 fee=self.fee, balance=self.parking_spaces[self.current_spot]['balance']))
 
+    # BC(worked on payment processing functionality)
+    # JH(added try/except)
         user_input = input(self.text['pay_full'].format(
             balance=self.parking_spaces[self.current_spot]['balance'])).lower()
         if user_input in self.options['full']:
@@ -141,8 +158,17 @@ class ParkingGarage:
                 balance=self.parking_spaces[self.current_spot]['balance']))
         elif user_input in self.options['portion']:
             while self.parking_spaces[self.current_spot]['balance'] > 0:
-                payment_input = float(input(self.text['current_balance'].format(
-                    balance=self.parking_spaces[self.current_spot]['balance'])))
+                pay_amounting = True
+                while pay_amounting:
+                    payment_input = input(self.text['current_balance'].format(
+                        balance=self.parking_spaces[self.current_spot]['balance']))
+
+                    try:
+                        payment_input = abs(float(payment_input))
+                        pay_amounting = False
+                    except:
+                        print(self.text['invalid_selection'])
+
                 if payment_input >= self.parking_spaces[self.current_spot]['balance']:
                     self.parking_spaces[self.current_spot]['balance'] = 0
                     print(self.text['payment_success'].format(
@@ -151,19 +177,37 @@ class ParkingGarage:
                     self.parking_spaces[self.current_spot]['balance'] -= payment_input
                     print(self.text['no_leave'])
 
+    # BC(re-write leave_garage for timer functionality)
+    # JH(started leave_garage)
     def leave_garage(self):
         # set spot back to unoccupied
         # removes current_spot, duration value from the instance of the class
 
         # ask user if they are ready to leave
-        self.parking_spaces[self.current_spot]['occupied'] = False
-        del self.parking_spaces[self.current_spot]['balance']
-        del self.parking_spaces[self.current_spot]['duration']
-        self.current_spot = ''
-        print(self.text['good_day'])
+
+        leaving = True
+        while leaving:
+            choice = input(self.text['exit_query']).lower()
+
+            if choice in self.options['yes']:
+                self.parking_spaces[self.current_spot]['occupied'] = False
+                del self.parking_spaces[self.current_spot]['balance']
+                del self.parking_spaces[self.current_spot]['duration']
+                self.current_spot = ''
+                print(self.text['good_day'])
+                leaving = False
+
+            elif choice in self.options['no']:
+                if self.timer > 0:
+                    print(self.text['show_timer'].format(timer=self.timer))
+                    self.timer -= 1
+                else:
+                    print(self.text['call_popo'])
+                    leaving = False
 
 
-# BC(set up control flow)
+
+# BC(set up control flow, set up try/except)
 def main():
     park = ParkingGarage()
 
@@ -173,14 +217,18 @@ def main():
         while entering:
             user_choice = input(park.text['park_query']).lower()
             if user_choice in park.options['yes']:
-                parking_duration = int(
-                    input(park.text['duration_query']))
-                entering = False
-                park.take_ticket(parking_duration)
-
+                durationing = True
+                while durationing:
+                    parking_duration = input(park.text['duration_query'])
+                    try:
+                        park.take_ticket(abs(float(parking_duration)))
+                        entering, durationing = False, False
+                    except:
+                        print(park.text['invalid_selection'])
+                        
                 exiting = True
                 while exiting:
-                    user_choice = input(park.text['exit_query']).lower()
+                    user_choice = input(park.text['leave_query']).lower()
                     if user_choice in park.options['yes']:
                         park.pay_for_parking()
                         park.leave_garage()
